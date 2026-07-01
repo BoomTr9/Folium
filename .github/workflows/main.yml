@@ -1,0 +1,46 @@
+name: Build iOS IPA
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: # เปิดให้กดสั่งรันเองได้คิวท์ๆ
+
+jobs:
+  build:
+    runs-on: macos-latest # สั่งเปิดเครื่อง Mac ของ GitHub
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: 'recursive' # ดึงโค้ดทั้งหมดรวมถึงโมดูลย่อย
+
+    - name: Set up Xcode version
+      run: sudo xcode-select -s /Applications/Xcode_15.2.app # เลือกเวอร์ชัน Xcode
+
+    # --- ขั้นตอนการใส่ใบเซอร์ของคุณ (ต้องไปเซ็ตค่าความลับใน Settings > Secrets ของคลังโค้ดก่อน) ---
+    # - name: Install Apple Certificate
+    #   run: |
+    #     ... สคริปต์สำหรับแตกไฟล์ใบเซอร์มาติดตั้งในเครื่องจำลอง ...
+
+    - name: Build and Archive
+      run: |
+        xcodebuild -project Folium.xcodeproj \
+                   -scheme Folium \
+                   -configuration Release \
+                   -sdk iphoneos \
+                   archive -archivePath $PWD/build/Folium.xcarchive
+                   # (อาจต้องใส่คำสั่ง -allowProvisioningUpdates หากใช้ระบบเซ็นแบบอัตโนมัติ)
+
+    - name: Export IPA
+      run: |
+        xcodebuild -exportArchive \
+                   -archivePath $PWD/build/Folium.xcarchive \
+                   -exportOptionsPlist exportOptions.plist \
+                   -exportPath $PWD/build/output
+
+    - name: Upload IPA Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Folium-IPA
+        path: build/output/*.ipa
