@@ -13,7 +13,8 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        submodules: 'recursive' # ดึงโค้ดทั้งหมดรวมถึงโมดูลย่อย
+        submodules: 'recursive' # ดึงโปรเจกต์ย่อยทั้งหมดแบบฝังลึก
+        fetch-depth: 0          # ดึงประวัติโค้ดทั้งหมด (ช่วยป้องกันปัญหา Git อ้างอิง Commit ไม่เจอ)
 
     # --- ขั้นตอนการใส่ใบเซอร์ของคุณ (ต้องไปเซ็ตค่าความลับใน Settings > Secrets ของคลังโค้ดก่อน) ---
     # - name: Install Apple Certificate
