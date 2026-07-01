@@ -10,11 +10,20 @@ jobs:
     runs-on: macos-latest # สั่งเปิดเครื่อง Mac ของ GitHub
 
     steps:
-    - name: Checkout repository
+    # 1. ดึงโปรเจกต์ Folium มาไว้ที่โฟลเดอร์หลัก (Folium)
+    - name: Checkout Folium
       uses: actions/checkout@v4
       with:
-        submodules: 'recursive' # ดึงโปรเจกต์ย่อยทั้งหมดแบบฝังลึก
-        fetch-depth: 0          # ดึงประวัติโค้ดทั้งหมด (ช่วยป้องกันปัญหา Git อ้างอิง Commit ไม่เจอ)
+        path: Folium
+        submodules: 'recursive'
+        fetch-depth: 0
+
+    # 2. ดึงโปรเจกต์ AntiqueKit มาวางคู่กัน (เพื่อให้หาพาธเจอ)
+    - name: Checkout AntiqueKit
+      uses: actions/checkout@v4
+      with:
+        repository: folium-app/AntiqueKit  # ดึงจากต้นฉบับของผู้พัฒนา
+        path: AntiqueKit                    # สั่งให้วางไว้ในโฟลเดอร์ AntiqueKit ข้างๆ กัน
 
     # --- ขั้นตอนการใส่ใบเซอร์ของคุณ (ต้องไปเซ็ตค่าความลับใน Settings > Secrets ของคลังโค้ดก่อน) ---
     # - name: Install Apple Certificate
